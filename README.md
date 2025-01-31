@@ -9,4 +9,4 @@ cd ArbeidskravDocker
 
 docker-compose up -d
 
-https://localhost/products)
+https://localhost/products
