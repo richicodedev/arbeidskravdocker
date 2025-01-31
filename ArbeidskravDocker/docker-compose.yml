@@ -1,0 +1,45 @@
+﻿services:
+  nginx:
+    image: richicodedev/nginx:latest
+    container_name: webserver
+    ports:
+      - "80:80"
+    networks:
+      - mynet
+
+
+  api:
+    image: richicodedev/dotnetapi:latest
+    container_name: api
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+    depends_on:
+      db:
+       condition: service_healthy
+    networks:
+      - mynet
+
+
+  db:
+    image: mysql:8.0
+    container_name: db
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpw
+      - MYSQL_DATABASE=mydb
+      - MYSQL_USER=myuser
+      - MYSQL_PASSWORD=mypassword
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+       test: ["CMD-SHELL", "mysqladmin ping --protocol=tcp -u root -prootpw"]
+       interval: 10s
+       timeout: 5s
+       retries: 5
+    networks:
+      - mynet
+volumes:
+  mysql-data:
+
+networks:
+  mynet:
+    driver: bridge
